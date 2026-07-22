@@ -263,6 +263,51 @@ export function Marquee() {
 }
 
 /* ------------------------------------------------------------------ */
+/* TextMarquee — scrolling word strip, shares the reel's marquee track  */
+/* so bands stacked around the reel drift together in one direction     */
+/* ------------------------------------------------------------------ */
+
+export function TextMarquee({
+  words,
+  className = "",
+  duration = "80s",
+}: {
+  words: string[];
+  className?: string;
+  duration?: string;
+}) {
+  /* two identical halves; the track animates -50% for a seamless loop */
+  const half = (
+    <div aria-hidden className="flex shrink-0 items-center">
+      {[...words, ...words, ...words].map((word, i) => (
+        <span key={i} className="flex shrink-0 items-center">
+          <span className="whitespace-nowrap">{word}</span>
+          <img
+            src="/rac-logo.jpg"
+            alt=""
+            className="mx-4 h-4 w-4 rounded-full object-cover md:mx-5 md:h-5 md:w-5"
+          />
+        </span>
+      ))}
+    </div>
+  );
+  return (
+    <div
+      className={`flex overflow-hidden bg-black py-1.5 md:py-2 ${className}`}
+      role="presentation"
+    >
+      <div
+        className="marquee-track flex"
+        style={{ animationDuration: duration }}
+      >
+        {half}
+        {half}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* PhotoReel — auto-scrolling strip of shots that loops on its own      */
 /* ------------------------------------------------------------------ */
 
