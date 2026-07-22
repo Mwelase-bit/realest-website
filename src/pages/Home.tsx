@@ -11,6 +11,7 @@ import {
   EditorialBreak,
   Marquee,
   PhotoReel,
+  TextMarquee,
   EASE,
 } from "../components/ui";
 import {
@@ -198,8 +199,17 @@ export default function Home() {
             </div>
           </Reveal>
         </div>
+        {/* text strip + reel + text strip — all drift left together */}
         <Reveal>
+          <TextMarquee
+            className="text-xs font-extrabold uppercase tracking-[0.2em] text-white md:text-base"
+            words={["Real car people", "Real builds", "Real culture"]}
+          />
           <PhotoReel images={GALLERY.slice(20, 40)} />
+          <TextMarquee
+            className="font-serif text-xs italic tracking-tight text-neutral-300 md:text-base"
+            words={["Fresh from the lens", "Shot by the collective", "Every frame ours"]}
+          />
         </Reveal>
       </section>
 
