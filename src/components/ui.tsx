@@ -1,5 +1,12 @@
 import { useRef } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useScroll,
+  useTransform,
+  useSpring,
+  useReducedMotion,
+} from "framer-motion";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import {
   ArrowRight,
@@ -399,6 +406,107 @@ export function EditorialBreak({
         )}
       </div>
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* CinematicVideoBreak — full-bleed video section with the same        */
+/* scroll-linked camera push-in used on the hero, plus a headline and  */
+/* a supporting blurb bottom-right                                     */
+/* ------------------------------------------------------------------ */
+
+export function CinematicVideoBreak({
+  src,
+  heading,
+  blurb,
+  to,
+  cta,
+}: {
+  src: string;
+  heading: React.ReactNode;
+  blurb: string;
+  to: string;
+  cta: string;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
+  });
+  const p = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.4 });
+
+  /* camera pushes in as the pin plays out, same curve as the hero but gentler */
+  const camScale = useTransform(p, [0, 0.55], [1, 1.35]);
+
+  /* text only rises in after the second swipe through the pin */
+  const textOpacity = useTransform(p, [0.4, 0.7], [0, 1]);
+  const textY = useTransform(p, [0.4, 0.75], [40, 0]);
+
+  const content = (
+    <div className="absolute inset-0 z-10 flex items-end">
+      <div className="w-full px-4 pb-10 sm:px-6 md:px-10 md:pb-14">
+        <div className="grid grid-cols-12 items-end gap-4">
+          <h2
+            className="col-span-12 text-4xl font-medium leading-[0.95] tracking-[-0.02em] sm:text-6xl md:col-span-8 md:text-7xl lg:text-8xl"
+            style={{ color: "#E1E0CC" }}
+          >
+            {heading}
+          </h2>
+          <div className="col-span-12 flex flex-col items-start gap-4 md:col-span-4 md:items-end md:pb-2 md:text-right">
+            <p className="max-w-xs text-xs text-white/75 sm:text-sm">{blurb}</p>
+            <div className="pointer-events-auto">
+              <PillButton to={to}>{cta}</PillButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (reduced) {
+    return (
+      <section className="relative h-screen w-full overflow-hidden bg-black">
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          src={src}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+        <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.3] mix-blend-overlay" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+        {content}
+      </section>
+    );
+  }
+
+  return (
+    <div ref={trackRef} className="relative h-[160vh]">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
+        <motion.div className="absolute inset-0 will-change-transform" style={{ scale: camScale }}>
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            src={src}
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        </motion.div>
+
+        <div className="pointer-events-none absolute inset-0">
+          <div className="noise-overlay absolute inset-0 opacity-[0.3] mix-blend-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+        </div>
+
+        <motion.div className="absolute inset-0 z-10" style={{ opacity: textOpacity, y: textY }}>
+          {content}
+        </motion.div>
+      </div>
+    </div>
   );
 }
 
