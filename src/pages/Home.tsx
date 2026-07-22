@@ -12,6 +12,7 @@ import {
   Marquee,
   PhotoReel,
   TextMarquee,
+  CinematicVideoBreak,
   EASE,
 } from "../components/ui";
 import {
@@ -84,6 +85,7 @@ export default function Home() {
         to="/gallery"
         cta="View the gallery"
       />
+      
 
       {/* ---------------- the drop (merch strip) ---------------- */}
       <section className="bg-white px-6 pb-28 pt-28 md:pb-40 md:pt-40">
@@ -123,8 +125,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ---------------- car culture meets clothing — cinematic video break ---------------- */}
+      <CinematicVideoBreak
+        src="/realest_burnout_v3.mp4"
+        heading={
+          <>
+            Car culture meets
+            <br />
+            <span className="font-serif italic font-normal">clothing.</span>
+          </>
+        }
+        blurb={`${DROP.blurb} Made by real car people, for real car people.`}
+        to="/shop"
+        cta="Shop the drop"
+      />
+
       {/* ---------------- services — editorial index rows ---------------- */}
-      <section className="bg-white px-6 pb-28 md:pb-40">
+      <section className="bg-white px-6 pb-28 pt-28 md:pb-40 md:pt-40">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-ink md:text-5xl">
@@ -179,6 +196,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      
 
       {/* ---------------- fresh from the lens — photo reel ---------------- */}
       <section className="bg-white pb-28 md:pb-40">
