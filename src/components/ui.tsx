@@ -102,14 +102,17 @@ export function Reveal({
   children,
   delay = 0,
   className = "",
+  style,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <motion.div
       className={className}
+      style={style}
       initial={{ y: 28, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-80px" }}
@@ -153,14 +156,16 @@ export function ServiceIcon({
 export function PillButton({
   to,
   children,
+  className = "",
 }: {
   to: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <Link
       to={to}
-      className="group inline-flex items-center gap-2 rounded-full bg-primary py-1.5 pl-5 pr-1.5 text-sm font-medium text-black transition-all hover:gap-3 sm:text-base"
+      className={`group inline-flex items-center gap-2 rounded-full bg-primary py-1.5 pl-5 pr-1.5 text-sm font-medium text-black transition-all hover:gap-3 sm:text-base ${className}`}
     >
       {children}
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black transition-transform group-hover:scale-110 sm:h-10 sm:w-10">
