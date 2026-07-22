@@ -215,18 +215,24 @@ export default function Home() {
 
       {/* ---------------- CTA ---------------- */}
       <section className="bg-white px-6 pb-28 md:pb-40">
-        <Reveal className="mx-auto flex max-w-6xl flex-col items-center gap-8 rounded-2xl bg-gray-100 px-6 py-20 text-center md:py-28">
-          <h2 className="max-w-2xl text-3xl font-extrabold leading-tight text-ink md:text-5xl">
+        <Reveal
+          className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 overflow-hidden rounded-2xl bg-gray-100 bg-cover bg-center px-6 py-20 text-center md:py-28"
+          style={{ backgroundImage: `url(${EDITORIAL.first})` }}
+        >
+          <div className="pointer-events-none absolute inset-0 bg-black/60" />
+          <h2 className="relative max-w-2xl text-3xl font-extrabold leading-tight text-white md:text-5xl">
             Let’s build something{" "}
             <span className="font-serif italic font-normal">real</span>{" "}
             together.
           </h2>
-          <p className="max-w-md text-sm text-gray-600">
+          <p className="relative max-w-md text-sm text-white/80">
             Open to partnerships, collaborations, sponsorships and creative
             opportunities — whether you’re a fellow creator, investor, car
             lover or streetwear enthusiast.
           </p>
-          <PillButton to="/contact">Start an inquiry</PillButton>
+          <PillButton to="/contact" className="relative">
+            Start an inquiry
+          </PillButton>
         </Reveal>
       </section>
     </main>
