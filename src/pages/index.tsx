@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, Check, Send, Play, ArrowRight } from "lucide-react";
+import { Loader2, Check, Send, Play, ArrowRight, AlertCircle } from "lucide-react";
 import {
   Reveal,
   WordsPullUp,
@@ -403,7 +403,8 @@ export function Contact() {
     setErrors((e) => ({ ...e, [k]: undefined }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const errs = validateInquiry(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
@@ -416,9 +417,17 @@ export function Contact() {
     }
   };
 
+  const reset = () => {
+    setForm({ name: "", email: "", topic: "", message: "" });
+    setErrors({});
+    setStatus("idle");
+  };
+
   const inputCls = (bad?: string) =>
-    `w-full rounded-lg border bg-white px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-neutral-400 focus:border-ink/60 ${
-      bad ? "border-red-400" : "border-gray-300"
+    `w-full rounded-xl border bg-white px-4 py-3.5 text-sm text-ink outline-none transition-all placeholder:text-neutral-400 focus:ring-4 ${
+      bad
+        ? "border-red-300 focus:border-red-400 focus:ring-red-50"
+        : "border-gray-200 focus:border-ink/50 focus:ring-primary/25"
     }`;
 
   return (
@@ -465,75 +474,116 @@ export function Contact() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: EASE }}
-              className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl bg-neutral-100 p-10 text-center"
+              className="flex h-full flex-col items-center justify-center gap-5 rounded-3xl border border-gray-200 bg-neutral-50 p-10 text-center shadow-sm md:p-14"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink">
-                <Check className="h-6 w-6 text-white" />
-              </span>
-              <h2 className="text-xl font-bold text-ink">Inquiry sent</h2>
-              <p className="max-w-xs text-sm text-neutral-600">
-                Thanks, {form.name.split(" ")[0]} — we’ll get back to you at{" "}
-                {form.email}.
-              </p>
+              <motion.span
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.5, ease: EASE }}
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-ink"
+              >
+                <Check className="h-6 w-6" style={{ color: "#E1E0CC" }} />
+              </motion.span>
+              <div>
+                <h2 className="text-2xl font-bold text-ink">
+                  Inquiry <span className="font-serif italic font-normal">sent.</span>
+                </h2>
+                <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-neutral-600">
+                  Thanks, {form.name.split(" ")[0]} — we’ll get back to you at{" "}
+                  <span className="font-medium text-ink">{form.email}</span>.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={reset}
+                className="mt-2 text-xs font-medium tracking-[0.2em] text-neutral-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-ink"
+              >
+                SEND ANOTHER INQUIRY
+              </button>
             </motion.div>
           ) : (
-            <div className="space-y-5 rounded-2xl bg-neutral-100 p-7 md:p-9">
-              <Field label="Name" error={errors.name}>
-                <input
-                  className={inputCls(errors.name)}
-                  placeholder="Your name"
-                  value={form.name}
-                  onChange={(e) => set("name")(e.target.value)}
-                />
-              </Field>
-              <Field label="Email" error={errors.email}>
-                <input
-                  className={inputCls(errors.email)}
-                  placeholder="you@example.com"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => set("email")(e.target.value)}
-                />
-              </Field>
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="space-y-6 rounded-3xl border border-gray-200 bg-neutral-50 p-7 shadow-sm md:p-9"
+            >
+              <div className="flex items-center gap-3.5 border-b border-gray-200 pb-6">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink">
+                  <Send className="h-4 w-4" style={{ color: "#E1E0CC" }} />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-ink">Send us a message</p>
+                  <p className="text-xs text-neutral-500">
+                    We typically reply within 2 business days.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field label="Name" error={errors.name}>
+                  <input
+                    className={inputCls(errors.name)}
+                    placeholder="Your name"
+                    aria-invalid={!!errors.name}
+                    value={form.name}
+                    onChange={(e) => set("name")(e.target.value)}
+                  />
+                </Field>
+                <Field label="Email" error={errors.email}>
+                  <input
+                    className={inputCls(errors.email)}
+                    placeholder="you@example.com"
+                    type="email"
+                    aria-invalid={!!errors.email}
+                    value={form.email}
+                    onChange={(e) => set("email")(e.target.value)}
+                  />
+                </Field>
+              </div>
+
               <Field label="What's this about?" error={errors.topic}>
                 <div className="flex flex-wrap gap-2">
                   {TOPICS.map((t) => (
                     <button
                       key={t}
                       type="button"
+                      aria-pressed={form.topic === t}
                       onClick={() => set("topic")(t)}
-                      className={`rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all ${
                         form.topic === t
-                          ? "border-ink bg-ink text-white"
-                          : "border-gray-300 bg-white text-neutral-600 hover:border-ink/50 hover:text-ink"
+                          ? "border-ink bg-ink text-white shadow-sm"
+                          : "border-gray-200 bg-white text-neutral-600 hover:border-ink/40 hover:text-ink"
                       }`}
                     >
+                      {form.topic === t && <Check className="h-3 w-3" />}
                       {t}
                     </button>
                   ))}
                 </div>
               </Field>
+
               <Field label="Message" error={errors.message}>
                 <textarea
                   className={`${inputCls(errors.message)} min-h-[120px] resize-y`}
                   placeholder="Tell us about the build, the shoot, or the idea…"
+                  aria-invalid={!!errors.message}
                   value={form.message}
                   onChange={(e) => set("message")(e.target.value)}
                 />
               </Field>
 
               {status === "error" && (
-                <p className="text-xs text-red-600">
+                <p className="flex items-start gap-2 rounded-lg bg-red-50 px-3.5 py-3 text-xs leading-relaxed text-red-600">
+                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   The inquiry couldn’t be sent. Check your connection and try
                   again — or email us directly at {BRAND.email}.
                 </p>
               )}
 
               <button
-                type="button"
-                onClick={handleSubmit}
+                type="submit"
                 disabled={status === "sending"}
-                className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-ink py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-60"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-ink py-3.5 text-sm font-bold tracking-wide text-white shadow-sm transition-all hover:shadow-md hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {status === "sending" ? (
                   <>
@@ -547,7 +597,7 @@ export function Contact() {
                   </>
                 )}
               </button>
-            </div>
+            </form>
           )}
         </div>
       </div>
@@ -566,11 +616,16 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-[10px] tracking-[0.35em] text-gray-500">
+      <span className="mb-2 block text-[10px] font-medium tracking-[0.35em] text-neutral-500">
         {label.toUpperCase()}
       </span>
       {children}
-      {error && <span className="mt-1.5 block text-xs text-red-400">{error}</span>}
+      {error && (
+        <span className="mt-1.5 flex items-center gap-1.5 text-xs text-red-500">
+          <AlertCircle className="h-3 w-3 shrink-0" />
+          {error}
+        </span>
+      )}
     </label>
   );
 }
